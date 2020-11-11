@@ -68,7 +68,7 @@ const toggleAuthDom = () => {
   if (user) {
     loginElem.style.display = 'none';
     userElem.style.display = '';
-    userNameElem.textContent = user.displayName;
+    userNameElem.textContent = user.email.split('@', 1);
   } else {
     userElem.style.display = 'none';
     loginElem.style.display = '';
