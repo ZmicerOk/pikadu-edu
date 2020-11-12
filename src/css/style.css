@@ -274,6 +274,7 @@ body {
   display: flex;
   align-items: center;
   text-decoration: none;
+  margin-right: auto;
 }
 .user-avatar {
   border-radius: 50%;
@@ -285,6 +286,11 @@ body {
   line-height: 24px;
   color: #595959;
 }
+.edit{
+  margin-right: 10px;
+  /* margin-left: auto; */
+}
+.icon-edit,
 .icon-exit {
   width: 20px;
   height: 20px;

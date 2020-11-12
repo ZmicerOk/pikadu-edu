@@ -46,6 +46,16 @@ const setUsers = {
     console.log('logOut');
   },
   signUp(email, password, cb) {
+    if (!email.trim() || !password.trim()) {
+      alert('enter correct email and password!');
+      return;
+    }
+
+    // if (email.indexOf('@') === -1) {
+    //   alert('email must include @ symbol');
+    //   return;
+    // }
+
     if (!this.getUser(email)) {
       const user = { email, pass: password, displayName: email };
       listUsers.push(user);
@@ -54,6 +64,7 @@ const setUsers = {
     } else {
       console.log('user in listUsers!');
     }
+    console.log(listUsers);
   },
   getUser(email) {
     return listUsers.find((el) => el.email === email);
@@ -78,11 +89,13 @@ const toggleAuthDom = () => {
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
   setUsers.logIn(emailInput.value, passwordInput.value, toggleAuthDom);
+  loginForm.reset();
 });
 
 loginSignup.addEventListener('click', (e) => {
   e.preventDefault();
   setUsers.signUp(emailInput.value, passwordInput.value, toggleAuthDom);
+  loginForm.reset();
 });
 
 toggleAuthDom();
