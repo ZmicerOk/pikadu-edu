@@ -241,7 +241,7 @@
             <span class="user-name">islamovartem</span>
           </a>
           <!-- /.user-info -->
-          <a href="#" class="edit">
+          <a href="#" class="edit-info">
             <svg class="icon icon-edit">
               <use xlink:href="img/icons.svg#edit"></use>
             </svg>
@@ -257,8 +257,14 @@
           <h2 class="edit-title">Редактировать</h2>
           <label class="edit-label">
             ваш логин
-            <input type="text" class="edit-input edit-username" name="username" minlength="3" placeholder="логин">
+            <input type="text" class="edit-input edit-username" name="username" minlength="3" placeholder="логин"
+              required>
           </label>
+          <label class="edit-label">
+            вашe фото
+            <input type="text" class="edit-input edit-photo" name="photo" placeholder="url-photo">
+          </label>
+          <button class="edit-btn">Сохранить</button> 
         </form>
       </div>
       <!-- /.user -->
