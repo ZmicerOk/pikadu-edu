@@ -24,6 +24,8 @@ const exitElem = document.querySelector('.exit'),
   editPhotoUrl = document.querySelector('.edit-photo'),
   userAvatarElem = document.querySelector('.user-avatar');
 
+const postsWrapper = document.querySelector('.posts');
+
 const listUsers = [
   {
     id: '01',
@@ -97,6 +99,31 @@ const setUsers = {
   },
 };
 
+const setPosts = {
+  allPosts: [
+    {
+      title: 'заголовок поста',
+      text:
+        'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
+      tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
+      author: 'max@mail.com',
+      date: '11.11.2020, 20:54:00',
+      like: 13,
+      comments: 22,
+    },
+    {
+      title: 'заголовок поста2',
+      text:
+        'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
+      tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
+      author: 'kate@mail.com',
+      date: '10.11.2020, 22:54:00',
+      like: 113,
+      comments: 2,
+    },
+  ],
+};
+
 const toggleAuthDom = () => {
   const user = setUsers.user;
   if (user) {
@@ -110,34 +137,43 @@ const toggleAuthDom = () => {
   }
 };
 
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  setUsers.logIn(emailInput.value, passwordInput.value, toggleAuthDom);
-  loginForm.reset();
-});
+const showAllPosts = () => {
+  postsWrapper.innerHTML = 'тут могла ...';
+};
 
-loginSignup.addEventListener('click', (e) => {
-  e.preventDefault();
-  setUsers.signUp(emailInput.value, passwordInput.value, toggleAuthDom);
-  loginForm.reset();
-});
+const init = () => {
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    setUsers.logIn(emailInput.value, passwordInput.value, toggleAuthDom);
+    loginForm.reset();
+  });
 
-exitElem.addEventListener('click', (e) => {
-  e.preventDefault();
-  console.log(e.target);
-  setUsers.logOut(toggleAuthDom);
-});
+  loginSignup.addEventListener('click', (e) => {
+    e.preventDefault();
+    setUsers.signUp(emailInput.value, passwordInput.value, toggleAuthDom);
+    loginForm.reset();
+  });
 
-editElem.addEventListener('click', (e) => {
-  e.preventDefault();
-  editContainer.classList.toggle('visible');
-  editUserName.value = setUsers.user.displayName;
-});
+  exitElem.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log(e.target);
+    setUsers.logOut(toggleAuthDom);
+  });
 
-editContainer.addEventListener('submit', (e) => {
-  e.preventDefault();
-  setUsers.editUser(editUserName.value, editPhotoUrl.value, toggleAuthDom);
-  editContainer.classList.remove('visible');
-});
+  editElem.addEventListener('click', (e) => {
+    e.preventDefault();
+    editContainer.classList.toggle('visible');
+    editUserName.value = setUsers.user.displayName;
+  });
 
-toggleAuthDom();
+  editContainer.addEventListener('submit', (e) => {
+    e.preventDefault();
+    setUsers.editUser(editUserName.value, editPhotoUrl.value, toggleAuthDom);
+    editContainer.classList.remove('visible');
+  });
+
+  showAllPosts();
+  toggleAuthDom();
+};
+
+document.addEventListener('DOMContentLoaded', init);
