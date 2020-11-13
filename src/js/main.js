@@ -143,14 +143,14 @@ const toggleAuthDom = () => {
 
 const showAllPosts = () => {
   let postHTML = '';
-  setPosts.allPosts.forEach(({ title, text, likes, comments, author, date }) => {
+  setPosts.allPosts.forEach(({ title, text, likes, comments, author, date, tags }) => {
     postHTML += `
      <section class="post">
      <div class="post-body">
        <h2 class="post-title">${title}</h2>
        <p class="post-text">${text}</p>
        <div class="tags">
-         <a href="#" class="tag">#свежее</a>
+        ${tags.map((tag) => `<a href="#" class="tag">#${tag}</a>`).join('')}
        </div>
      </div>
      <div class="post-footer">
