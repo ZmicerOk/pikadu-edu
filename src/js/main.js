@@ -28,7 +28,7 @@ const loginElem = document.querySelector('.login'),
   loginForm = document.querySelector('.login-form'),
   emailInput = document.querySelector('.login-email'),
   passwordInput = document.querySelector('.login-password'),
-  // document.querySelector('.login-forget'),
+  loginForget = document.querySelector('.login-forget'),
   // document.querySelector('.login-signin'),
   loginSignup = document.querySelector('.login-signup'),
   userElem = document.querySelector('.user'),
@@ -182,6 +182,16 @@ const setUsers = {
   // autorizedUser(user) {
   //   this.user = user;
   // },
+  sendForget(email) {
+    firebase.auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        alert('Email sent');
+      })
+      .catch((error) => {
+        alert('An error happened');
+      });
+  },
 };
 
 const setPosts = {
@@ -230,16 +240,21 @@ const setPosts = {
       like: 0,
       comments: 0,
     });
-    firebase.database().ref('post').set(this.allPosts)
-    .then(()=>this.getPosts(handler));
-
+    firebase
+      .database()
+      .ref('post')
+      .set(this.allPosts)
+      .then(() => this.getPosts(handler));
   },
-  getPosts(handler){
-    firebase.database().ref('post').on('value', snapshot =>{
-      this.allPosts = snapshot.val() || [];
-      handler();
-    });
-  }
+  getPosts(handler) {
+    firebase
+      .database()
+      .ref('post')
+      .on('value', (snapshot) => {
+        this.allPosts = snapshot.val() || [];
+        handler();
+      });
+  },
 };
 
 const toggleAuthDom = () => {
@@ -379,6 +394,12 @@ const init = () => {
     addPostElem.reset();
   });
 
+  loginForget.addEventListener('click', (e) => {
+    e.preventDefault();
+    setUsers.sendForget(emailInput.value);
+    emailInput.value = '';
+  });
+  
   setUsers.initUser(toggleAuthDom);
   setPosts.getPosts(showAllPosts);
   showAllPosts();
