@@ -11,7 +11,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-console.log(firebase);
+// console.log(firebase);
 
 //islamov code
 let menuToggle = document.querySelector('#menu-toggle');
@@ -47,46 +47,77 @@ const postsWrapper = document.querySelector('.posts');
 const buttonNewPost = document.querySelector('.button-new-post'),
   addPostElem = document.querySelector('.add-post');
 
-const listUsers = [
-  {
-    id: '01',
-    email: 'max@mail.com',
-    password: 'max2000',
-    displayName: 'Max',
-  },
-  {
-    id: '02',
-    email: 'kate@mail.com',
-    password: '123',
-    displayName: 'Kate',
-    urlPhoto:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSLbPURGP3tu5EH1KWYtOfsq9QQUdLW8SvQQA&usqp=CAU',
-  },
-];
+// const listUsers = [
+//   {
+//     id: '01',
+//     email: 'max@mail.com',
+//     password: 'max2000',
+//     displayName: 'Max',
+//   },
+//   {
+//     id: '02',
+//     email: 'kate@mail.com',
+//     password: '123',
+//     displayName: 'Kate',
+//     urlPhoto:
+//       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSLbPURGP3tu5EH1KWYtOfsq9QQUdLW8SvQQA&usqp=CAU',
+//   },
+// ];
+
+const DEFAULT_PHOTO = userAvatarElem.src;
 
 const setUsers = {
   user: null,
-  logIn(email, password, cb) {
+  initUser(handler) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.user = user;
+      } else {
+        this.user = null;
+      }
+      if (handler) {
+        handler();
+      }
+    });
+  },
+  logIn(email, password, handler) {
     if (!regExpValidEmail.test(email)) {
       alert('invalid email syntaxis');
       return;
     }
-
-    console.log(email, password);
-    const user = this.getUser(email);
-    if (user && user.password === password) {
-      this.autorizedUser(user);
-      cb();
-    } else {
-      alert("this user and user's data not exist");
-    }
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode === 'auth/wrong-password') {
+          console.log(errorMessage);
+          alert('Неверный пароль');
+        } else if (errorCode === 'auth/user-not-found') {
+          console.log(errorMessage);
+          alert('Такой пользователь ещё не зареген');
+        } else {
+          alert(errorMessage);
+        }
+        console.error(error);
+      });
+    // console.log(email, password);
+    // const user = this.getUser(email);
+    // if (user && user.password === password) {
+    //   this.autorizedUser(user);
+    //   handler();
+    // } else {
+    //   alert("this user and user's data not exist");
+    // }
   },
-  logOut(cb) {
-    console.log('logOut');
-    this.user = null;
-    cb();
+  logOut(handler) {
+    // console.log('logOut');
+    // this.user = null;
+    firebase.auth().signOut();
+    // if(handler){handler();}
   },
-  signUp(email, password, cb) {
+  signUp(email, password, handler) {
     if (!regExpValidEmail.test(email)) {
       alert('invalid email syntaxis');
       return;
@@ -95,90 +126,131 @@ const setUsers = {
       alert('enter correct email and password!');
       return;
     }
-    if (!this.getUser(email)) {
-      const user = { email, password, displayName: email.substring(0, email.indexOf('@')) };
-      listUsers.push(user);
-      this.autorizedUser(user);
-      cb();
-    } else {
-      console.log('user in listUsers!');
-    }
-    console.log(listUsers);
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((data) => {
+        this.editUser(email.substring(0, email.indexOf('@')), null, handler);
+        console.log(data);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode === 'auth/weak-password') {
+          console.log(errorMessage);
+          alert('Слабый пароль');
+        } else if (errorCode === 'auth/email-already-in-use') {
+          console.log(errorMessage);
+          alert('Такой пользователь уже зареген');
+        } else {
+          alert(errorMessage);
+        }
+        console.error(error);
+      });
+    // if (!this.getUser(email)) {
+    //   const user = { email, password, displayName: email.substring(0, email.indexOf('@')) };
+    //   listUsers.push(user);
+    //   this.autorizedUser(user);
+    //   handler();
+    // } else {
+    //   console.log('user in listUsers!');
+    // }
+    // console.log(listUsers);
   },
   editUser(userName, userPhoto, handler) {
+    const user = firebase.auth().currentUser;
     if (userName) {
-      this.user.displayName = userName;
+      if (userPhoto) {
+        user
+          .updateProfile({
+            displayName: userName,
+            photoURL: userPhoto,
+          })
+          .then(handler);
+      }
+      user
+        .updateProfile({
+          displayName: userName,
+        })
+        .then(handler);
     }
-    if (userPhoto) {
-      this.user.photo = userPhoto;
-    }
-    handler();
   },
-  getUser(email) {
-    return listUsers.find((el) => el.email === email);
-  },
-  autorizedUser(user) {
-    this.user = user;
-  },
+  // getUser(email) {
+  //   return listUsers.find((el) => el.email === email);
+  // },
+  // autorizedUser(user) {
+  //   this.user = user;
+  // },
 };
 
 const setPosts = {
   allPosts: [
-    {
-      title: 'заголовок поста',
-      text:
-        'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae, cupiditate incidunt? Ea deserunt quaerat ipsum nihil nostrum velit maiores adipisci! Nostrum amet ut saepe dolor quis similique soluta tempore! Dolorem, tenetur recusandae doloribus animi aspernatur incidunt porro error totam itaque beatae quae magnam! Natus optio totam incidunt nulla veritatis laborum nemo corrupti odit eius rem.',
-      tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-      author: {
-        displayName: 'max',
-        photo:
-          'https://www.mantruckandbus.com/fileadmin/_processed_/4/4/csm_mit-18-monaten-planungszeit-stefan-sahlmann-header_6ca09676b6.jpg',
-      },
-      date: '11.11.2020, 20:54:00',
-      likes: 13,
-      comments: 22,
-    },
-    {
-      title: 'заголовок поста2',
-      text:
-        'NeДалеко a blizko за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
-      tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-      author: {
-        displayName: 'kate',
-        photo:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQBcjOeLVaef71MiQ-sJeVnRvT70H1Dmvw-IQ&usqp=CAU',
-      },
-      date: '11.10.2020, 10:54:00',
-      likes: 113,
-      comments: 2,
-    },
+    // {
+    //   title: 'заголовок поста',
+    //   text:
+    //     'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae, cupiditate incidunt? Ea deserunt quaerat ipsum nihil nostrum velit maiores adipisci! Nostrum amet ut saepe dolor quis similique soluta tempore! Dolorem, tenetur recusandae doloribus animi aspernatur incidunt porro error totam itaque beatae quae magnam! Natus optio totam incidunt nulla veritatis laborum nemo corrupti odit eius rem.',
+    //   tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
+    //   author: {
+    //     displayName: 'max',
+    //     photo:
+    //       'https://www.mantruckandbus.com/fileadmin/_processed_/4/4/csm_mit-18-monaten-planungszeit-stefan-sahlmann-header_6ca09676b6.jpg',
+    //   },
+    //   date: '11.11.2020, 20:54:00',
+    //   likes: 13,
+    //   comments: 22,
+    // },
+    // {
+    //   title: 'заголовок поста2',
+    //   text:
+    //     'NeДалеко a blizko за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
+    //   tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
+    //   author: {
+    //     displayName: 'kate',
+    //     photo:
+    //       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQBcjOeLVaef71MiQ-sJeVnRvT70H1Dmvw-IQ&usqp=CAU',
+    //   },
+    //   date: '11.10.2020, 10:54:00',
+    //   likes: 113,
+    //   comments: 2,
+    // },
   ],
   addPost(title, text, tags, handler) {
+    const user = firebase.auth().currentUser;
     this.allPosts.unshift({
+      id: `postID${(+new Date()).toString(16)}-${user.uid}`,
       title,
       text,
       tags: tags.split(',').map((item) => item.trim()),
       author: {
         displayName: setUsers.user.displayName,
-        photo: setUsers.user.photo,
+        photo: setUsers.user.photoURL,
       },
       date: new Date().toLocaleString(),
       like: 0,
       comments: 0,
     });
-    if (handler) {
-      handler();
-    }
+    firebase.database().ref('post').set(this.allPosts)
+    .then(()=>this.getPosts(handler));
+
   },
+  getPosts(handler){
+    firebase.database().ref('post').on('value', snapshot =>{
+      this.allPosts = snapshot.val() || [];
+      handler();
+    });
+  }
 };
 
 const toggleAuthDom = () => {
   const user = setUsers.user;
+  console.log('user', user);
+
   if (user) {
     loginElem.style.display = 'none';
     userElem.style.display = '';
     userNameElem.textContent = user.displayName;
-    userAvatarElem.src = user.photo || userAvatarElem.src;
+    userAvatarElem.src = user.photoURL || DEFAULT_PHOTO;
     buttonNewPost.classList.add('visible');
 
     //end
@@ -201,7 +273,7 @@ const showAddPost = () => {
 
 const showAllPosts = () => {
   let postHTML = '';
-  setPosts.allPosts.forEach(({ title, text, likes, comments, author, date, tags }) => {
+  setPosts.allPosts.forEach(({ title, text, like, comments, author, date, tags }) => {
     postHTML += `
      <section class="post">
      <div class="post-body">
@@ -217,7 +289,7 @@ const showAllPosts = () => {
            <svg width="19" height="20" class="icon icon-like">
              <use xlink:href="img/icons.svg#like"></use>
            </svg>
-           <span class="likes-counter">${likes}</span>
+           <span class="likes-counter">${like}</span>
          </button>
          <button class="post-button comments">
            <svg width="21" height="21" class="icon icon-comment">
@@ -269,8 +341,9 @@ const init = () => {
 
   exitElem.addEventListener('click', (e) => {
     e.preventDefault();
-    console.log(e.target);
-    setUsers.logOut(toggleAuthDom);
+    // console.log(e.target);
+    // setUsers.logOut(toggleAuthDom);
+    setUsers.logOut();
   });
 
   editElem.addEventListener('click', (e) => {
@@ -305,8 +378,11 @@ const init = () => {
     addPostElem.classList.remove('visible');
     addPostElem.reset();
   });
+
+  setUsers.initUser(toggleAuthDom);
+  setPosts.getPosts(showAllPosts);
   showAllPosts();
-  toggleAuthDom();
+  // toggleAuthDom();
 };
 
 document.addEventListener('DOMContentLoaded', init);
