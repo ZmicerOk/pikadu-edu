@@ -1,3 +1,18 @@
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: 'AIzaSyDAQy_HQgj807ksUqAbX5ryFeX1Ed3zBns',
+  authDomain: 'pikadu-test.firebaseapp.com',
+  databaseURL: 'https://pikadu-test.firebaseio.com',
+  projectId: 'pikadu-test',
+  storageBucket: 'pikadu-test.appspot.com',
+  messagingSenderId: '867566369144',
+  appId: '1:867566369144:web:a11ef1d176ff46b55ab08d',
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+console.log(firebase);
+
 //islamov code
 let menuToggle = document.querySelector('#menu-toggle');
 let menu = document.querySelector('.sidebar');
@@ -27,6 +42,10 @@ const exitElem = document.querySelector('.exit'),
   userAvatarElem = document.querySelector('.user-avatar');
 
 const postsWrapper = document.querySelector('.posts');
+
+//3-rd lesson consts
+const buttonNewPost = document.querySelector('.button-new-post'),
+  addPostElem = document.querySelector('.add-post');
 
 const listUsers = [
   {
@@ -110,7 +129,11 @@ const setPosts = {
       text:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae, cupiditate incidunt? Ea deserunt quaerat ipsum nihil nostrum velit maiores adipisci! Nostrum amet ut saepe dolor quis similique soluta tempore! Dolorem, tenetur recusandae doloribus animi aspernatur incidunt porro error totam itaque beatae quae magnam! Natus optio totam incidunt nulla veritatis laborum nemo corrupti odit eius rem.',
       tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-      author: 'max@mail.com',
+      author: {
+        displayName: 'max',
+        photo:
+          'https://www.mantruckandbus.com/fileadmin/_processed_/4/4/csm_mit-18-monaten-planungszeit-stefan-sahlmann-header_6ca09676b6.jpg',
+      },
       date: '11.11.2020, 20:54:00',
       likes: 13,
       comments: 22,
@@ -120,12 +143,33 @@ const setPosts = {
       text:
         'NeДалеко a blizko за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
       tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-      author: 'kate@mail.com',
-      date: '10.11.2020, 22:54:00',
+      author: {
+        displayName: 'kate',
+        photo:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQBcjOeLVaef71MiQ-sJeVnRvT70H1Dmvw-IQ&usqp=CAU',
+      },
+      date: '11.10.2020, 10:54:00',
       likes: 113,
       comments: 2,
     },
   ],
+  addPost(title, text, tags, handler) {
+    this.allPosts.unshift({
+      title,
+      text,
+      tags: tags.split(',').map((item) => item.trim()),
+      author: {
+        displayName: setUsers.user.displayName,
+        photo: setUsers.user.photo,
+      },
+      date: new Date().toLocaleString(),
+      like: 0,
+      comments: 0,
+    });
+    if (handler) {
+      handler();
+    }
+  },
 };
 
 const toggleAuthDom = () => {
@@ -135,10 +179,24 @@ const toggleAuthDom = () => {
     userElem.style.display = '';
     userNameElem.textContent = user.displayName;
     userAvatarElem.src = user.photo || userAvatarElem.src;
+    buttonNewPost.classList.add('visible');
+
+    //end
   } else {
     userElem.style.display = 'none';
     loginElem.style.display = '';
+    buttonNewPost.classList.remove('visible');
+    addPostElem.classList.remove('visible');
+    postsWrapper.classList.add('visible');
+    // // todo remove
+    // addPostElem.classList.add('visible');
+    // postsWrapper.classList.remove('visible');
   }
+};
+
+const showAddPost = () => {
+  addPostElem.classList.add('visible');
+  postsWrapper.classList.remove('visible');
 };
 
 const showAllPosts = () => {
@@ -150,7 +208,7 @@ const showAllPosts = () => {
        <h2 class="post-title">${title}</h2>
        <p class="post-text">${text}</p>
        <div class="tags">
-        ${tags.map((tag) => `<a href="#" class="tag">#${tag}</a>`).join('')}
+        ${tags.map((tag) => `<a href="#${tag}" class="tag">#${tag}</a>`).join('')}
        </div>
      </div>
      <div class="post-footer">
@@ -180,16 +238,20 @@ const showAllPosts = () => {
        </div>
        <div class="post-author">
          <div class="author-about">
-           <a href="#" class="author-username">${author}</a>
+           <a href="#" class="author-username">${author.displayName}</a>
            <span class="post-time">${date}</span>
          </div>
-         <a href="#" class="author-link"><img src="img/avatar.jpeg" alt="avatar" class="author-avatar"></a>
+         <a href="#" class="author-link"><img src="${
+           author.photo || 'img/avatar.jpeg'
+         }" alt="avatar" class="author-avatar"></a>
        </div>
      </div>
    </section>
      `;
   });
   postsWrapper.innerHTML = postHTML;
+  addPostElem.classList.remove('visible');
+  postsWrapper.classList.add('visible');
 };
 
 const init = () => {
@@ -222,7 +284,27 @@ const init = () => {
     setUsers.editUser(editUserName.value, editPhotoUrl.value, toggleAuthDom);
     editContainer.classList.remove('visible');
   });
+  buttonNewPost.addEventListener('click', (e) => {
+    e.preventDefault();
+    showAddPost();
+  });
 
+  addPostElem.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const { title, text, tags } = addPostElem.elements;
+    console.log(title, text, tags);
+    if (title.value.length < 6) {
+      alert('Заголовок слишком мал!');
+      return;
+    }
+    if (text.value.length < 16) {
+      alert('Текста слишком мало!');
+      return;
+    }
+    setPosts.addPost(title.value, text.value, tags.value, showAllPosts);
+    addPostElem.classList.remove('visible');
+    addPostElem.reset();
+  });
   showAllPosts();
   toggleAuthDom();
 };
