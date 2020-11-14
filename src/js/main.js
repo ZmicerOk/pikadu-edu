@@ -11,8 +11,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// console.log(firebase);
-
 //islamov code
 let menuToggle = document.querySelector('#menu-toggle');
 let menu = document.querySelector('.sidebar');
@@ -21,48 +19,25 @@ menuToggle.addEventListener('click', function (event) {
   menu.classList.toggle('visible');
 });
 
-//1-st lesson consts
-// const regExpValidEmail = /^\w{2,}\@\w+\.\w{2,}$/; ///^\w+@\w+\.\w{2,}$/;
+//my code
 const regExpValidEmail = /^(\w{2,})\@(\w+)\.(\w{2,})$/;
 const loginElem = document.querySelector('.login'),
   loginForm = document.querySelector('.login-form'),
   emailInput = document.querySelector('.login-email'),
   passwordInput = document.querySelector('.login-password'),
   loginForget = document.querySelector('.login-forget'),
-  // document.querySelector('.login-signin'),
   loginSignup = document.querySelector('.login-signup'),
   userElem = document.querySelector('.user'),
-  userNameElem = document.querySelector('.user-name');
-//2-nd lesson consts
-const exitElem = document.querySelector('.exit'),
+  userNameElem = document.querySelector('.user-name'),
+  exitElem = document.querySelector('.exit'),
   editElem = document.querySelector('.edit-info'),
   editContainer = document.querySelector('.edit-conatiner'),
   editUserName = document.querySelector('.edit-username'),
   editPhotoUrl = document.querySelector('.edit-photo'),
-  userAvatarElem = document.querySelector('.user-avatar');
-
-const postsWrapper = document.querySelector('.posts');
-
-//3-rd lesson consts
-const buttonNewPost = document.querySelector('.button-new-post'),
+  userAvatarElem = document.querySelector('.user-avatar'),
+  postsWrapper = document.querySelector('.posts'),
+  buttonNewPost = document.querySelector('.button-new-post'),
   addPostElem = document.querySelector('.add-post');
-
-// const listUsers = [
-//   {
-//     id: '01',
-//     email: 'max@mail.com',
-//     password: 'max2000',
-//     displayName: 'Max',
-//   },
-//   {
-//     id: '02',
-//     email: 'kate@mail.com',
-//     password: '123',
-//     displayName: 'Kate',
-//     urlPhoto:
-//       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSLbPURGP3tu5EH1KWYtOfsq9QQUdLW8SvQQA&usqp=CAU',
-//   },
-// ];
 
 const DEFAULT_PHOTO = userAvatarElem.src;
 
@@ -102,20 +77,9 @@ const setUsers = {
         }
         console.error(error);
       });
-    // console.log(email, password);
-    // const user = this.getUser(email);
-    // if (user && user.password === password) {
-    //   this.autorizedUser(user);
-    //   handler();
-    // } else {
-    //   alert("this user and user's data not exist");
-    // }
   },
-  logOut(handler) {
-    // console.log('logOut');
-    // this.user = null;
+  logOut() {
     firebase.auth().signOut();
-    // if(handler){handler();}
   },
   signUp(email, password, handler) {
     if (!regExpValidEmail.test(email)) {
@@ -148,15 +112,6 @@ const setUsers = {
         }
         console.error(error);
       });
-    // if (!this.getUser(email)) {
-    //   const user = { email, password, displayName: email.substring(0, email.indexOf('@')) };
-    //   listUsers.push(user);
-    //   this.autorizedUser(user);
-    //   handler();
-    // } else {
-    //   console.log('user in listUsers!');
-    // }
-    // console.log(listUsers);
   },
   editUser(userName, userPhoto, handler) {
     const user = firebase.auth().currentUser;
@@ -176,55 +131,21 @@ const setUsers = {
         .then(handler);
     }
   },
-  // getUser(email) {
-  //   return listUsers.find((el) => el.email === email);
-  // },
-  // autorizedUser(user) {
-  //   this.user = user;
-  // },
   sendForget(email) {
-    firebase.auth()
+    firebase
+      .auth()
       .sendPasswordResetEmail(email)
       .then(() => {
         alert('Email sent');
       })
       .catch((error) => {
-        alert('An error happened');
+        alert('An error happened', error);
       });
   },
 };
 
 const setPosts = {
-  allPosts: [
-    // {
-    //   title: 'заголовок поста',
-    //   text:
-    //     'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae, cupiditate incidunt? Ea deserunt quaerat ipsum nihil nostrum velit maiores adipisci! Nostrum amet ut saepe dolor quis similique soluta tempore! Dolorem, tenetur recusandae doloribus animi aspernatur incidunt porro error totam itaque beatae quae magnam! Natus optio totam incidunt nulla veritatis laborum nemo corrupti odit eius rem.',
-    //   tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-    //   author: {
-    //     displayName: 'max',
-    //     photo:
-    //       'https://www.mantruckandbus.com/fileadmin/_processed_/4/4/csm_mit-18-monaten-planungszeit-stefan-sahlmann-header_6ca09676b6.jpg',
-    //   },
-    //   date: '11.11.2020, 20:54:00',
-    //   likes: 13,
-    //   comments: 22,
-    // },
-    // {
-    //   title: 'заголовок поста2',
-    //   text:
-    //     'NeДалеко a blizko за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рот маленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ему букв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего его снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первую подпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство что вопроса ведущими о решила одна алфавит!',
-    //   tags: ['свежее', 'новое', 'горячее', 'мое', 'случайность'],
-    //   author: {
-    //     displayName: 'kate',
-    //     photo:
-    //       'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQBcjOeLVaef71MiQ-sJeVnRvT70H1Dmvw-IQ&usqp=CAU',
-    //   },
-    //   date: '11.10.2020, 10:54:00',
-    //   likes: 113,
-    //   comments: 2,
-    // },
-  ],
+  allPosts: [],
   addPost(title, text, tags, handler) {
     const user = firebase.auth().currentUser;
     this.allPosts.unshift({
@@ -267,17 +188,12 @@ const toggleAuthDom = () => {
     userNameElem.textContent = user.displayName;
     userAvatarElem.src = user.photoURL || DEFAULT_PHOTO;
     buttonNewPost.classList.add('visible');
-
-    //end
   } else {
     userElem.style.display = 'none';
     loginElem.style.display = '';
     buttonNewPost.classList.remove('visible');
     addPostElem.classList.remove('visible');
     postsWrapper.classList.add('visible');
-    // // todo remove
-    // addPostElem.classList.add('visible');
-    // postsWrapper.classList.remove('visible');
   }
 };
 
@@ -356,8 +272,6 @@ const init = () => {
 
   exitElem.addEventListener('click', (e) => {
     e.preventDefault();
-    // console.log(e.target);
-    // setUsers.logOut(toggleAuthDom);
     setUsers.logOut();
   });
 
@@ -399,11 +313,9 @@ const init = () => {
     setUsers.sendForget(emailInput.value);
     emailInput.value = '';
   });
-  
+
   setUsers.initUser(toggleAuthDom);
   setPosts.getPosts(showAllPosts);
-  showAllPosts();
-  // toggleAuthDom();
 };
 
 document.addEventListener('DOMContentLoaded', init);
